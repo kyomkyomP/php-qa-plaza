@@ -1,0 +1,17 @@
+{
+    "sqltools.connections": [
+        {
+            "database": "qa_app",
+            "driver": "MySQL",
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "name": "php-book-app-db",
+            "password": "secret",
+            "port": 13306,
+            "previewLimit": 50,
+            "server": "localhost",
+            "username": "root"
+        }
+    ]
+}
