@@ -23,7 +23,7 @@ class QuestionsController extends AppController
      */
     public function index()
     {
-        $questions = $this->paginate($this->Questions->findQuestionsWithAnsweredCount(),['order' => ['Questions.id' => "DESC"]]);
+        $questions = $this->paginate($this->Questions->findQuestionsWithAnsweredCount()->contain(['Users']), ['order' => ['Questions.id' => "DESC"]]);
         $this->set(compact("questions"));
     }
 
@@ -39,7 +39,7 @@ class QuestionsController extends AppController
 
         if ($this->request->is('post')) {
             $question = $this->Questions->patchEntity($question, $this->request->getData());
-            $question->user_id = 1; // @TODO ユーザ管理機能実行時に修正する
+            $question->user_id = $this->Auth->user('id');
 
             if ($this->Questions->save($question)) {
                 $this->Flash->success('質問を投稿しました');
@@ -60,8 +60,8 @@ class QuestionsController extends AppController
      */
     public function view(int $id)
     {
-        $question = $this->Questions->get($id);
-        $answers = $this->Answers->find()->where(['Answers.question_id' => $id])->orderAsc('Answers.id')->all();
+        $question = $this->Questions->get($id, ['contain' => ['Users']]);
+        $answers = $this->Answers->find()->where(['Answers.question_id' => $id])->contain(['Users'])->orderAsc('Answers.id')->all();
         
         $newAnswer = $this->Answers->newEntity();
 
@@ -79,7 +79,10 @@ class QuestionsController extends AppController
         $this->request->allowMethod(['post']);
 
         $question = $this->Questions->get($id);
-        // @TODO 質問を削除できるのは質問投稿者のみとする
+        if ($question->user_id !== $this->Auth->user('id')) {
+            $this->Flash->error('他のユーザの質問を削除することはできません');
+            return $this->redirect(['action' => 'index']);
+        }
 
         if ($this->Questions->delete($question)) {
             $this->Flash->success('質問を削除しました');

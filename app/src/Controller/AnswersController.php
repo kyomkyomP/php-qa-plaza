@@ -35,7 +35,7 @@ class AnswersController extends AppController
             return $this->redirect(['controller' => 'Questions', 'action' => 'view', $answer->question_id]);
         }
 
-        $answer->user_id = 1; // @TODO ユーザ管理機能実装時に修正
+        $answer->user_id = $this->Auth->user('id');
         if ($this->Answers->save($answer)) {
             $this->Flash->success('回答を投稿しました');
         } else {
@@ -55,7 +55,10 @@ class AnswersController extends AppController
     {
         $answer = $this->Answers->get($id);
         $questionId = $answer->question_id;
-        // @TODO 回答を削除できるのは回答投稿者のみとする
+        if ($answer->user_id !== $this->Auth->user('id')) {
+            $this->Flash->error('他のユーザの回答を削除することはできません');
+            return $this->redirect(['controller' => 'Questions', 'action' => 'view', $questionId]);
+        }
 
         if ($this->Answers->delete($answer)) {
             $this->Flash->success('回答を削除しました');

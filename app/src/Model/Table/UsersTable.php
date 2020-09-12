@@ -49,7 +49,7 @@ class UsersTable extends Table
                 'message' => 'ユーザ名は半角英数字のみ入力してください'
             ])
             ->add('username', 'unique', [
-                'rule' => 'validationUnique',
+                'rule' => 'validateUnique',
                 'provider' => 'table',
                 'message' => 'そのユーザ名は既に使用されています'
             ]);

@@ -23,7 +23,15 @@ class AnswersTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
-        $this->belongsTo('Questions', ['foreignKey' => 'question_id', 'joinType' => 'INNER']);
+        $this->belongsTo('Questions', [
+            'foreignKey' => 'question_id',
+            'joinType' => 'INNER'
+        ]);
+
+        $this->belongsTo('Users', [
+            'foreignKey' => 'user_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**
